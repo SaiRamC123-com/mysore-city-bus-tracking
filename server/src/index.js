@@ -59,14 +59,18 @@ app.use((err, _req, res, _next) => {
   res.status(status).json({ error: status >= 500 && status !== 502 && status !== 503 ? "Something went wrong on the server." : err.message });
 });
 
-const stat = await getStatic(); // fail fast if Firestore hasn't been seeded
-app.listen(env.port, () => {
-  console.log(`Mysuru Bus API on http://localhost:${env.port}  (db: ${usingMemory ? "memory" : "firebase"}, routes: ${stat.routeList.length}, stops: ${Object.keys(stat.stops).length})`);
-  if (stat.routeList.some((r) => r.demo)) console.log("NOTE: routes/stops in data/*.seed.json are DEMO data. Replace them with surveyed coordinates before real use.");
-  if (!env.groqKey) console.log("NOTE: GROQ_API_KEY not set, the chatbot endpoint will return 503.");
-  if (!env.driverSecret) console.log("NOTE: DRIVER_SECRET not set, the driver endpoint is disabled.");
-});
+export default app;
 
-if (env.runSimulator) {
-  startSimulator({ busesPerRoute: env.simBusesPerRoute }).then(() => console.log(`Simulator running: ${env.simBusesPerRoute} demo buses per route`));
+if (process.env.VERCEL !== "1") {
+  const stat = await getStatic(); // fail fast if Firestore hasn't been seeded
+  app.listen(env.port, () => {
+    console.log(`Mysuru Bus API on http://localhost:${env.port}  (db: ${usingMemory ? "memory" : "firebase"}, routes: ${stat.routeList.length}, stops: ${Object.keys(stat.stops).length})`);
+    if (stat.routeList.some((r) => r.demo)) console.log("NOTE: routes/stops in data/*.seed.json are DEMO data. Replace them with surveyed coordinates before real use.");
+    if (!env.groqKey) console.log("NOTE: GROQ_API_KEY not set, the chatbot endpoint will return 503.");
+    if (!env.driverSecret) console.log("NOTE: DRIVER_SECRET not set, the driver endpoint is disabled.");
+  });
+
+  if (env.runSimulator) {
+    startSimulator({ busesPerRoute: env.simBusesPerRoute }).then(() => console.log(`Simulator running: ${env.simBusesPerRoute} demo buses per route`));
+  }
 }
