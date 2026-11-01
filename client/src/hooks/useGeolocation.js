@@ -15,25 +15,34 @@ export function useGeolocation({ highAccuracy = false } = {}) {
   const stop = useCallback(() => {
     stopWatching.current?.();
     stopWatching.current = null;
+    setPos(null);
     setWatching(false);
   }, []);
 
   const request = useCallback(() => {
     if (!("geolocation" in navigator)) {
       setError("This browser can't share its location.");
-      return;
+      return false;
     }
-    if (stopWatching.current) return;
+    if (stopWatching.current) return true;
     setError("");
+    setPos(null);
     setWatching(true);
-    stopWatching.current = watchLocation(navigator.geolocation, {
-      highAccuracy,
-      onFix: setPos,
-      onError: (message) => {
-        setError(message);
-        stop();
-      },
-    });
+    try {
+      stopWatching.current = watchLocation(navigator.geolocation, {
+        highAccuracy,
+        onFix: setPos,
+        onError: (message) => {
+          setError(message);
+          stop();
+        },
+      });
+      return true;
+    } catch (error) {
+      setWatching(false);
+      setError(error?.message || "This browser couldn't start location sharing.");
+      return false;
+    }
   }, [highAccuracy, stop]);
 
   useEffect(() => () => stop(), [stop]);

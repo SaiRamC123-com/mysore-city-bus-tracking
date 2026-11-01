@@ -1,5 +1,8 @@
 // Thin wrapper over fetch for the Node server (no extra dependency).
-const BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+const DEFAULT_API_URL = import.meta.env.PROD
+  ? "https://mysore-city-bus-api.vercel.app"
+  : "http://localhost:5000";
+const BASE = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/$/, "");
 
 async function request(path, { method = "GET", body, headers } = {}) {
   let res;

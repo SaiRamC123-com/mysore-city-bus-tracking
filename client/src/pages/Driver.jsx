@@ -41,6 +41,7 @@ export default function Driver() {
   const [routeId, setRouteId] = useState("");
   const [direction, setDirection] = useState(0);
   const [trips, setTrips] = useState([]);
+  const [tripsLoading, setTripsLoading] = useState(false);
   const [tripStartTs, setTripStartTs] = useState(0);
   const [capacity, setCapacity] = useState(60);
   const [seatCapacity, setSeatCapacity] = useState(40);
@@ -72,6 +73,10 @@ export default function Driver() {
   useEffect(() => {
     if (!routeId) return undefined;
     let alive = true;
+    setTrips([]);
+    setTripStartTs(0);
+    setTripsLoading(true);
+    setError("");
     api
       .trips(routeId, direction)
       .then((d) => {
@@ -80,7 +85,8 @@ export default function Driver() {
         const nearest = [...d.trips].sort((a, b) => Math.abs(a.departTs - Date.now()) - Math.abs(b.departTs - Date.now()))[0];
         setTripStartTs(nearest?.departTs ?? 0);
       })
-      .catch((e) => alive && setError(e.message));
+      .catch((e) => alive && setError(e.message))
+      .finally(() => alive && setTripsLoading(false));
     return () => {
       alive = false;
     };
@@ -103,6 +109,7 @@ export default function Driver() {
       const problem = gpsProblem(pos);
       if (problem) {
         setError(problem === "rough" ? t("driver.gpsTooRough", { km: Math.round(pos.accuracy / 1000) }) : t("driver.gpsOutside"));
+        stop();
         return;
       }
       // Speed: use the device's own value when it has one, otherwise derive it from the last two fixes.
@@ -150,6 +157,10 @@ export default function Driver() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [running]);
 
+  useEffect(() => {
+    if (running && !practice && geo.error) setRunning(false);
+  }, [geo.error, practice, running]);
+
   const wakeLock = useRef(null);
   const start = async () => {
     store.set("driverSecret", secret);
@@ -164,8 +175,8 @@ export default function Driver() {
       mover.current = makePractice(route, direction);
       setTripStartTs(Date.now()); // a practice trip starts now
       latest.current.tripStartTs = Date.now();
-    } else {
-      geo.request();
+    } else if (!geo.request()) {
+      return;
     }
     setRunning(true);
     try {
@@ -241,8 +252,8 @@ export default function Driver() {
         </div>
         <label className="block text-sm font-semibold">
           {t("driver.trip")}
-          <select value={tripStartTs} onChange={(e) => setTripStartTs(Number(e.target.value))} className={`${input} mt-1 font-normal`}>
-            {trips.length === 0 && <option value={0}>{t("driver.noTrips")}</option>}
+          <select value={tripStartTs} onChange={(e) => setTripStartTs(Number(e.target.value))} disabled={tripsLoading || !routeId} className={`${input} mt-1 font-normal`}>
+            {tripsLoading ? <option value={0}>{t("driver.loadingTrips")}</option> : trips.length === 0 ? <option value={0}>{t("driver.noTrips")}</option> : null}
             {trips.map((x) => (
               <option key={x.departTs} value={x.departTs}>
                 {clock(x.departTs)} {x.from} → {x.towards}
@@ -321,7 +332,6 @@ export default function Driver() {
           {t("driver.standing")}
           <input
             type="number"
-            min={0}
             max={count}
             value={counted ? standingPassengers : 0}
             min={Math.max(0, count - seatCapacity)}
@@ -344,7 +354,13 @@ export default function Driver() {
 
       {running && (
         <p className="rounded-xl bg-white p-3 text-sm ring-1 ring-ink/10" aria-live="polite">
-          {practice ? t("driver.practiceOn") : geo.pos ? t("driver.gps", { acc: Math.round(geo.pos.accuracy ?? 0) }) : t("driver.waitingGps")}
+          {practice
+            ? t("driver.practiceOn")
+            : !geo.pos
+              ? t("driver.waitingGps")
+              : last
+                ? t("driver.sharing", { acc: Math.round(geo.pos.accuracy ?? 0) })
+                : t("driver.connecting", { acc: Math.round(geo.pos.accuracy ?? 0) })}
           {last && (
             <>
               <br />

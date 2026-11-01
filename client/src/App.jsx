@@ -61,7 +61,7 @@ export default function App() {
         </Routes>
       </main>
 
-      <SOSButton />
+      <SOSButton userPos={geo.pos} />
       <ChatWidget userPos={geo.pos} />
     </div>
   );

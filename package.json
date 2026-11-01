@@ -7,6 +7,6 @@
   ],
   "scripts": {
     "build": "npm run build --workspace client",
-    "test": "npm test --workspace server"
+    "test": "npm test --workspace server && npm test --workspace client"
   }
 }

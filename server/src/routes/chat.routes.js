@@ -17,7 +17,10 @@ r.post("/chat", ah(async (req, res) => {
   try {
     res.json(await chat(parsed.data));
   } catch (e) {
-    if (e.status === 503) throw e;
+    if (e.status === 503) {
+      console.error("[chat] GROQ_API_KEY is not configured on the backend.");
+      throw new HttpError(503, "The chat assistant is not configured. Add GROQ_API_KEY to the backend Production environment.");
+    }
     console.error("[chat]", e.status ?? "", e.message);
     // While developing (NODE_ENV is not "production") show the real reason in the chat window too.
     const why = process.env.NODE_ENV === "production" ? "" : ` [${e.status ?? "no status"}] ${String(e.message).slice(0, 300)}`;

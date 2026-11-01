@@ -3,40 +3,60 @@ import { useT } from "../i18n/index.jsx";
 
 /**
  * Safety sheet. It does NOT alert the bus company or any server: it helps the person call 112
- * and send their live location to someone they trust (share sheet or WhatsApp).
+ * and prepare a location message in the native share sheet or SMS app.
  */
-export default function SOSButton() {
+export default function SOSButton({ userPos }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [smsHref, setSmsHref] = useState("");
+
+  const prepareShare = async (position, isFallback = false) => {
+    const url = `https://www.google.com/maps?q=${position.lat},${position.lng}`;
+    const text = t("sos.shareText", { url });
+    setSmsHref(`sms:?body=${encodeURIComponent(text)}`);
+    setMsg(isFallback ? t("sos.lastKnown") : t("sos.shareReady"));
+    if (!navigator.share) return;
+    try {
+      await navigator.share({ text });
+    } catch (error) {
+      if (error?.name !== "AbortError") setMsg(t("sos.shareFallback"));
+    }
+  };
+
+  const useLastKnownLocation = async () => {
+    if (userPos && Date.now() - userPos.ts <= 15 * 60_000) {
+      await prepareShare(userPos, true);
+      return;
+    }
+    setMsg(t("sos.noLocation"));
+  };
 
   const share = () => {
+    setSmsHref("");
     if (!("geolocation" in navigator)) {
-      setMsg(t("sos.noLocation"));
+      void useLastKnownLocation();
       return;
     }
     setBusy(true);
     setMsg(t("sos.locating"));
-    navigator.geolocation.getCurrentPosition(
-      async (p) => {
-        const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-        const text = t("sos.shareText", { url });
-        setBusy(false);
-        setMsg("");
-        try {
-          if (navigator.share) await navigator.share({ text });
-          else window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener");
-        } catch {
-          /* the person closed the share sheet */
-        }
-      },
-      () => {
-        setBusy(false);
-        setMsg(t("sos.noLocation"));
-      },
-      { enableHighAccuracy: true, timeout: 12000 }
-    );
+    try {
+      navigator.geolocation.getCurrentPosition(
+        async (p) => {
+          setBusy(false);
+          await prepareShare({ lat: p.coords.latitude, lng: p.coords.longitude });
+        },
+        () => {
+          setBusy(false);
+          void useLastKnownLocation();
+        },
+        { enableHighAccuracy: true, timeout: 12000 }
+      );
+    } catch {
+      setBusy(false);
+      void useLastKnownLocation();
+    }
   };
 
   return (
@@ -61,6 +81,11 @@ export default function SOSButton() {
                 {t("sos.share")}
               </button>
               {msg && <p className="text-sm text-ink/70" aria-live="polite">{msg}</p>}
+              {smsHref && (
+                <a href={smsHref} className="block rounded-xl border border-ink/20 px-4 py-3 text-center font-semibold">
+                  {t("sos.openSms")}
+                </a>
+              )}
             </div>
             <p className="mt-4 text-xs text-ink/60">{t("sos.note")}</p>
             <button type="button" onClick={() => setOpen(false)} className="mt-3 w-full rounded-xl border border-ink/20 px-4 py-2 font-semibold">

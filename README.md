@@ -25,6 +25,6 @@ By default, the server can run against its in-memory demo store. Configure Fireb
 
 ## Deployment
 
-The Vite frontend is in `client/`; set `VITE_API_URL` to the deployed API base URL and configure the public `VITE_FIREBASE_*` client settings if using Firebase live subscriptions. The Express API is in `server/` and needs server-only Firebase credentials, a persistent Firebase configuration, and `CLIENT_ORIGIN` set to the frontend origin. Set secrets in the hosting provider's environment configuration, not in source files.
+The Vite frontend is in `client/`; production defaults to `https://mysore-city-bus-api.vercel.app`, while `VITE_API_URL` can override it for another deployment. Configure the public `VITE_FIREBASE_*` client settings if using Firebase live subscriptions. The Express API is in `server/` and needs server-only Firebase credentials, a persistent Firebase configuration, and `CLIENT_ORIGIN` set to the frontend origin. Configure `GROQ_API_KEY` as a backend-only secret to enable the assistant; never use a `VITE_` prefix for it. Set secrets in the hosting provider's environment configuration, not in source files.
 
 See `docs/data-collection.md` and `docs/firebase-rules.md` for data and access details.

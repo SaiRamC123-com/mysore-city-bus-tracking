@@ -13,30 +13,57 @@ export default function ChatWidget({ userPos }) {
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState([]); // { role: "user" | "assistant", content, error? }
   const endRef = useRef(null);
+  const nextId = useRef(0);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, busy, open]);
 
-  const send = async (raw) => {
-    const message = raw.trim();
-    if (!message || busy) return;
-    const history = messages.filter((m) => !m.error).map(({ role, content }) => ({ role, content }));
-    setMessages((m) => [...m, { role: "user", content: message }]);
-    setText("");
+  const requestReply = async (request, responseId) => {
+    if (busy) return;
     setBusy(true);
+    setMessages((current) =>
+      current.map((item) => (item.id === responseId ? { ...item, content: "", error: false, pending: true } : item))
+    );
     try {
-      const out = await api.chat({
-        message,
-        history,
-        location: userPos ? { lat: userPos.lat, lng: userPos.lng } : null,
-      });
-      setMessages((m) => [...m, { role: "assistant", content: out.reply || t("chat.empty") }]);
+      const out = await api.chat(request);
+      setMessages((current) =>
+        current.map((item) =>
+          item.id === responseId ? { ...item, content: out.reply || t("chat.empty"), pending: false, error: false } : item
+        )
+      );
     } catch (e) {
-      setMessages((m) => [...m, { role: "assistant", content: e.message || t("chat.error"), error: true }]);
+      setMessages((current) =>
+        current.map((item) =>
+          item.id === responseId ? { ...item, content: e.message || t("chat.error"), pending: false, error: true } : item
+        )
+      );
     } finally {
       setBusy(false);
     }
+  };
+
+  const send = (raw) => {
+    const message = raw.trim();
+    if (!message || busy) return;
+    const failedRequests = new Set(messages.filter((item) => item.error).map((item) => item.requestId));
+    const history = messages
+      .filter((item) => !item.pending && !failedRequests.has(item.requestId))
+      .map(({ role, content }) => ({ role, content }));
+    const requestId = ++nextId.current;
+    const responseId = ++nextId.current;
+    const request = {
+      message,
+      history,
+      location: userPos ? { lat: userPos.lat, lng: userPos.lng } : null,
+    };
+    setMessages((current) => [
+      ...current,
+      { id: requestId, requestId, role: "user", content: message },
+      { id: responseId, requestId, role: "assistant", content: "", pending: true, retryRequest: request },
+    ]);
+    setText("");
+    void requestReply(request, responseId);
   };
 
   const suggestions = [t("chat.s1"), t("chat.s2"), t("chat.s3")];
@@ -59,7 +86,7 @@ export default function ChatWidget({ userPos }) {
         >
           <header className="bg-ink px-4 py-3 font-display text-lg font-extrabold text-white">{t("chat.title")}</header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3" aria-live="polite">
+          <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3" aria-live="polite" aria-busy={busy}>
             {messages.length === 0 && (
               <div>
                 <p className="text-sm text-ink/80">{t("chat.welcome")}</p>
@@ -72,21 +99,31 @@ export default function ChatWidget({ userPos }) {
                 </div>
               </div>
             )}
-            {messages.map((m, i) => (
-              <p
-                key={i}
-                className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
-                  m.role === "user"
-                    ? "ml-auto bg-ink text-white"
-                    : m.error
-                      ? "bg-high/10 text-high"
-                      : "bg-mist text-ink"
-                }`}
-              >
-                {m.content}
-              </p>
-            ))}
-            {busy && <p className="text-sm text-ink/60">{t("chat.thinking")}</p>}
+            {messages.filter((item) => !item.pending).map((m) =>
+              m.error ? (
+                <div key={m.id} className="max-w-[85%] rounded-2xl bg-high/10 px-3 py-2 text-sm text-high">
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void requestReply(m.retryRequest, m.id)}
+                    className="mt-2 font-bold underline underline-offset-2 disabled:opacity-50"
+                  >
+                    {t("chat.retry")}
+                  </button>
+                </div>
+              ) : (
+                <p
+                  key={m.id}
+                  className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
+                    m.role === "user" ? "ml-auto bg-ink text-white" : "bg-mist text-ink"
+                  }`}
+                >
+                  {m.content}
+                </p>
+              )
+            )}
+            {busy && <p role="status" className="text-sm text-ink/60">{t("chat.thinking")}</p>}
             <div ref={endRef} />
           </div>
 
