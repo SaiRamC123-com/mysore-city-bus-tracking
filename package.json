@@ -1,0 +1,12 @@
+{
+  "name": "mysore-city-bus-tracking",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace client",
+    "test": "npm test --workspace server"
+  }
+}

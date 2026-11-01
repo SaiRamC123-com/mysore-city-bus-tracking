@@ -1,0 +1,582 @@
+[
+  {
+    "id": "s_cbs",
+    "name": "Mysuru City Bus Stand",
+    "nameKn": "ಮೈಸೂರು ನಗರ ಬಸ್ ನಿಲ್ದಾಣ",
+    "aliases": [
+      "city bus stand",
+      "cbs",
+      "bus stand",
+      "nagara bus stand"
+    ],
+    "lat": 12.3086,
+    "lng": 76.6504,
+    "radiusM": 50,
+    "verified": false
+  },
+  {
+    "id": "s_palace",
+    "name": "Mysore Palace (South Gate)",
+    "nameKn": "ಮೈಸೂರು ಅರಮನೆ",
+    "aliases": [
+      "palace",
+      "mysore palace",
+      "mysuru palace",
+      "amba vilas",
+      "aramane"
+    ],
+    "lat": 12.304,
+    "lng": 76.6552,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_lalitha",
+    "name": "Lalitha Mahal Junction",
+    "nameKn": "ಲಲಿತ ಮಹಲ್",
+    "aliases": [
+      "lalitha mahal",
+      "lalitha mahal palace"
+    ],
+    "lat": 12.2992,
+    "lng": 76.6742,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_chamundi_base",
+    "name": "Chamundi Hill Base",
+    "nameKn": "ಚಾಮುಂಡಿ ಬೆಟ್ಟದ ತಪ್ಪಲು",
+    "aliases": [
+      "chamundi hill foot",
+      "chamundi base",
+      "hill base"
+    ],
+    "lat": 12.284,
+    "lng": 76.6718,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_chamundi_temple",
+    "name": "Chamundi Hills Temple",
+    "nameKn": "ಚಾಮುಂಡಿ ಬೆಟ್ಟ",
+    "aliases": [
+      "chamundi hills",
+      "chamundi hill",
+      "chamundi betta",
+      "chamundeshwari temple",
+      "chamundi"
+    ],
+    "lat": 12.2737,
+    "lng": 76.6702,
+    "radiusM": 50,
+    "verified": false
+  },
+  {
+    "id": "s_zoo",
+    "name": "Mysuru Zoo",
+    "nameKn": "ಮೈಸೂರು ಮೃಗಾಲಯ",
+    "aliases": [
+      "zoo",
+      "mysore zoo",
+      "chamarajendra zoo",
+      "mrugalaya"
+    ],
+    "lat": 12.3015,
+    "lng": 76.659,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_karanji",
+    "name": "Karanji Lake",
+    "nameKn": "ಕರಂಜಿ ಕೆರೆ",
+    "aliases": [
+      "karanji",
+      "karanji kere"
+    ],
+    "lat": 12.3025,
+    "lng": 76.664,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_devaraja",
+    "name": "Devaraja Market",
+    "nameKn": "ದೇವರಾಜ ಮಾರುಕಟ್ಟೆ",
+    "aliases": [
+      "devaraja",
+      "devaraja mohalla",
+      "market"
+    ],
+    "lat": 12.307,
+    "lng": 76.6522,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_ramaswamy",
+    "name": "Ramaswamy Circle",
+    "nameKn": "ರಾಮಸ್ವಾಮಿ ವೃತ್ತ",
+    "aliases": [
+      "ramaswamy",
+      "ramaswamy circle"
+    ],
+    "lat": 12.303,
+    "lng": 76.644,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_saraswathi",
+    "name": "Saraswathipuram",
+    "nameKn": "ಸರಸ್ವತಿಪುರಂ",
+    "aliases": [
+      "saraswathipuram",
+      "saraswati puram"
+    ],
+    "lat": 12.2995,
+    "lng": 76.633,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_kuvempunagar",
+    "name": "Kuvempunagar",
+    "nameKn": "ಕುವೆಂಪುನಗರ",
+    "aliases": [
+      "kuvempu nagar",
+      "kuvempunagar bus stand"
+    ],
+    "lat": 12.2896,
+    "lng": 76.6225,
+    "radiusM": 50,
+    "verified": false
+  },
+  {
+    "id": "s_railway",
+    "name": "Mysuru Railway Station",
+    "nameKn": "ಮೈಸೂರು ರೈಲ್ವೆ ನಿಲ್ದಾಣ",
+    "aliases": [
+      "railway station",
+      "mysore junction",
+      "mysuru junction",
+      "train station",
+      "railway"
+    ],
+    "lat": 12.3135,
+    "lng": 76.644,
+    "radiusM": 50,
+    "verified": false
+  },
+  {
+    "id": "s_kukkarahalli",
+    "name": "Kukkarahalli Lake",
+    "nameKn": "ಕುಕ್ಕರಹಳ್ಳಿ ಕೆರೆ",
+    "aliases": [
+      "kukkarahalli",
+      "kukkarahalli kere"
+    ],
+    "lat": 12.3105,
+    "lng": 76.636,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_univ",
+    "name": "Manasagangotri",
+    "nameKn": "ಮಾನಸಗಂಗೋತ್ರಿ",
+    "aliases": [
+      "university of mysore",
+      "manasagangothri",
+      "uom"
+    ],
+    "lat": 12.3085,
+    "lng": 76.623,
+    "radiusM": 40,
+    "verified": false
+  },
+  {
+    "id": "s_vijayanagar",
+    "name": "Vijayanagar",
+    "nameKn": "ವಿಜಯನಗರ",
+    "aliases": [
+      "vijayanagara",
+      "vijay nagar"
+    ],
+    "lat": 12.329,
+    "lng": 76.621,
+    "radiusM": 50,
+    "verified": false
+  },
+  {
+    "id": "s_gun_house_circle",
+    "name": "Gun House Circle",
+    "aliases": [
+      "gun house circle",
+      "gun house"
+    ],
+    "lat": 12.301917,
+    "lng": 76.654824,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_vontikoppal",
+    "name": "Vontikoppal",
+    "aliases": [
+      "vontikoppal"
+    ],
+    "lat": 12.326628,
+    "lng": 76.632246,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_bannimantap",
+    "name": "Bannimantap",
+    "aliases": [
+      "bannimantap"
+    ],
+    "lat": 12.332569,
+    "lng": 76.651739,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_hebbal",
+    "name": "Hebbal",
+    "aliases": [
+      "hebbal"
+    ],
+    "lat": 12.357989,
+    "lng": 76.610508,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_hootagalli",
+    "name": "Hootagalli",
+    "aliases": [
+      "hootagalli"
+    ],
+    "lat": 12.335646,
+    "lng": 76.5945,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_metagalli",
+    "name": "Metagalli",
+    "aliases": [
+      "metagalli"
+    ],
+    "lat": 12.347751,
+    "lng": 76.629817,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_gokulam",
+    "name": "Gokulam",
+    "aliases": [
+      "gokulam"
+    ],
+    "lat": 12.326099,
+    "lng": 76.628297,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_jayalakshmipuram",
+    "name": "Jayalakshmipuram",
+    "aliases": [
+      "jayalakshmipuram"
+    ],
+    "lat": 12.322416,
+    "lng": 76.621774,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_yadavagiri",
+    "name": "Yadavagiri",
+    "aliases": [
+      "yadavagiri"
+    ],
+    "lat": 12.327919,
+    "lng": 76.639152,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_nazarbad",
+    "name": "Nazarbad",
+    "aliases": [
+      "nazarbad"
+    ],
+    "lat": 12.309333,
+    "lng": 76.665753,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_lashkar_mohalla",
+    "name": "Lashkar Mohalla",
+    "aliases": [
+      "lashkar mohalla"
+    ],
+    "lat": 12.311781,
+    "lng": 76.662133,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_ashokapuram",
+    "name": "Ashokapuram",
+    "aliases": [
+      "ashokapuram"
+    ],
+    "lat": 12.274088,
+    "lng": 76.636011,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_bogadi",
+    "name": "Bogadi",
+    "aliases": [
+      "bogadi"
+    ],
+    "lat": 12.300647,
+    "lng": 76.598389,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_srirampura",
+    "name": "Srirampura",
+    "aliases": [
+      "srirampura"
+    ],
+    "lat": 12.263727,
+    "lng": 76.622815,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_hinkal",
+    "name": "Hinkal",
+    "aliases": [
+      "hinkal"
+    ],
+    "lat": 12.329964,
+    "lng": 76.600741,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_kesare",
+    "name": "Kesare",
+    "aliases": [
+      "kesare"
+    ],
+    "lat": 12.343312,
+    "lng": 76.6628,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_mandi_mohalla",
+    "name": "Mandi Mohalla",
+    "aliases": [
+      "mandi mohalla"
+    ],
+    "lat": 12.316872,
+    "lng": 76.653906,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_agrahara",
+    "name": "Agrahara",
+    "aliases": [
+      "agrahara"
+    ],
+    "lat": 12.297491,
+    "lng": 76.655947,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_jss_hospital_mysuru",
+    "name": "JSS Hospital Mysuru",
+    "aliases": [
+      "jss hospital mysuru",
+      "jss hospital"
+    ],
+    "lat": 12.29597,
+    "lng": 76.655253,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_infosys_mysuru",
+    "name": "Infosys Mysuru",
+    "aliases": [
+      "infosys mysuru",
+      "infosys"
+    ],
+    "lat": 12.363441,
+    "lng": 76.5961,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_mandakalli",
+    "name": "Mandakalli",
+    "aliases": [
+      "mandakalli"
+    ],
+    "lat": 12.234649,
+    "lng": 76.651409,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_teresian_college",
+    "name": "teresian college",
+    "aliases": [
+      "teresian college"
+    ],
+    "lat": 12.305767,
+    "lng": 76.6907,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_chamundipuram",
+    "name": "Chamundipuram",
+    "aliases": [
+      "chamundipuram"
+    ],
+    "lat": 12.288581,
+    "lng": 76.648152,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_lakshmipuram",
+    "name": "Lakshmipuram",
+    "aliases": [
+      "lakshmipuram"
+    ],
+    "lat": 12.295988,
+    "lng": 76.645566,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_ramakrishnanagar",
+    "name": "Ramakrishnanagar",
+    "aliases": [
+      "ramakrishnanagar"
+    ],
+    "lat": 12.292717,
+    "lng": 76.616686,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_vidyaranyapuram",
+    "name": "Vidyaranyapuram",
+    "aliases": [
+      "vidyaranyapuram"
+    ],
+    "lat": 12.279299,
+    "lng": 76.649605,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_dattagalli",
+    "name": "Dattagalli",
+    "aliases": [
+      "dattagalli"
+    ],
+    "lat": 12.283171,
+    "lng": 76.606114,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_udayagiri",
+    "name": "Udayagiri",
+    "aliases": [
+      "udayagiri"
+    ],
+    "lat": 12.325033,
+    "lng": 76.675133,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_rajendranagar",
+    "name": "Rajendranagar",
+    "aliases": [
+      "rajendranagar"
+    ],
+    "lat": 12.3324,
+    "lng": 76.667229,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_shivarampet",
+    "name": "Shivarampet",
+    "aliases": [
+      "shivarampet"
+    ],
+    "lat": 12.311976,
+    "lng": 76.648771,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_race_course_mysuru",
+    "name": "Race Course Mysuru",
+    "aliases": [
+      "race course mysuru",
+      "race course"
+    ],
+    "lat": 12.297152,
+    "lng": 76.670766,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_devegowda_circle",
+    "name": "Devegowda Circle",
+    "aliases": [
+      "devegowda",
+      "devegowda circle"
+    ],
+    "lat": 12.3105,
+    "lng": 76.642,
+    "radiusM": 60,
+    "verified": false
+  },
+  {
+    "id": "s_teresian_circle",
+    "name": "Teresian Circle",
+    "aliases": [
+      "teresian",
+      "teresian circle"
+    ],
+    "lat": 12.3,
+    "lng": 76.65,
+    "radiusM": 60,
+    "verified": false
+  }
+]

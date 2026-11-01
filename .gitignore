@@ -1,0 +1,44 @@
+# Environment files and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+*.pem
+*.key
+*serviceAccount*.json
+*credentials*.json
+
+# Dependencies and build output
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.dist/
+**/.dist/
+coverage/
+**/coverage/
+
+# Python environments and generated files
+.venv/
+venv/
+**/.venv/
+**/venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Local tooling and operating-system files
+.vercel/
+**/.vercel/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+

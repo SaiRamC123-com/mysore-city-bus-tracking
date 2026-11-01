@@ -1,0 +1,254 @@
+@import "tailwindcss";
+
+@theme {
+  /* Midnight & Electric Teal.  ~30% navy: header, buttons, badges.  ~60% clean: ice-white + white cards.  ~10% teal: live bus + what matters. */
+  --color-ink: #071e3d;
+  --color-lamp: #00d4b1; /* the accent (name kept so every page follows the new theme) */
+  --color-mist: #f2fafb;
+  --color-maroon: #0a5cb5; /* links */
+  --color-low: #2e9e44; /* crowd: green, kept clearly different from the teal accent */
+  --color-mid: #f59e0b;
+  --color-high: #e0443a;
+  --font-display: "Bricolage Grotesque", "Noto Sans Kannada", system-ui, sans-serif;
+  --font-sans: "Figtree", "Noto Sans Kannada", system-ui, sans-serif;
+  --shadow-sm: 0 4px 14px rgb(7 30 61 / 0.1); /* softer, deeper cards everywhere */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #f2fafb 0%, #e8f3f6 100%) fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-lamp);
+  outline-offset: 2px;
+}
+
+/* ---- gradient navy surfaces ---- */
+.app-header {
+  background: linear-gradient(135deg, #071e3d 0%, #0e3a6b 100%);
+}
+.hero {
+  background: linear-gradient(135deg, #071e3d 0%, #0e3a6b 100%);
+  box-shadow: 0 8px 24px rgb(7 30 61 / 0.25);
+}
+
+/* ---- map pins (Leaflet divIcon) ---- */
+.bus-pin {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--color-ink);
+  color: #fff;
+  font: 800 13px/1 var(--font-display);
+  border: 3px solid var(--color-low);
+  box-shadow: 0 0 0 5px rgb(0 212 177 / 0.3), 0 2px 6px rgb(7 30 61 / 0.35);
+  animation: pin-glow 2s ease-out infinite;
+}
+.bus-pin--medium {
+  border-color: var(--color-mid);
+}
+.bus-pin--high {
+  border-color: var(--color-high);
+}
+.bus-pin--sel {
+  outline: 3px solid var(--color-lamp);
+  outline-offset: 2px;
+}
+@keyframes pin-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgb(0 212 177 / 0.55), 0 2px 6px rgb(7 30 61 / 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 12px rgb(0 212 177 / 0), 0 2px 6px rgb(7 30 61 / 0.35);
+  }
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+}
+/* calmer, cleaner map colours so the navy and teal stand out */
+.leaflet-tile-pane {
+  filter: saturate(0.55) brightness(1.04) contrast(0.95);
+}
+
+/* ---- live movement ---- */
+.bus-move {
+  transition: transform 3s linear; /* a bus on the map glides to its new spot instead of jumping */
+}
+.leaflet-zoom-anim .bus-move {
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1); /* but zooming stays quick */
+}
+.line-bus {
+  transition: top 3s linear;
+}
+.live-dot {
+  animation: live-pulse 1.6s ease-out infinite;
+}
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(7 30 61 / 0.55);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgb(7 30 61 / 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---- popup that opens when a bus on the map is tapped ---- */
+.bus-popup .leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 10px 30px rgb(7 30 61 / 0.3);
+}
+.bus-popup .leaflet-popup-content {
+  margin: 0;
+  width: 280px !important;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.bp {
+  padding: 12px 14px 12px;
+  color: var(--color-ink);
+}
+.bp p {
+  margin: 0;
+}
+.bp-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  padding-right: 14px;
+}
+.bp-num {
+  background: var(--color-ink);
+  color: #fff;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font: 800 14px/1.2 var(--font-display);
+}
+.bp-level {
+  margin-top: 10px !important;
+  font-size: 17px;
+  font-weight: 800;
+}
+.bp-low {
+  color: var(--color-low);
+}
+.bp-medium {
+  color: var(--color-mid);
+}
+.bp-high {
+  color: var(--color-high);
+}
+.bp-status-free {
+  color: #16803a;
+}
+.bp-status-normal {
+  color: #1769aa;
+}
+.bp-status-crowded {
+  color: #d97706;
+}
+.bp-status-full {
+  color: #c62828;
+}
+.bp-seats {
+  display: flex;
+  gap: 3px;
+  margin: 6px 0 8px;
+}
+.bp-seats i {
+  width: 15px;
+  height: 20px;
+  border-radius: 4px;
+  background: #dfe7ee;
+}
+.bp-seats.bp-low i.on {
+  background: var(--color-low);
+}
+.bp-seats.bp-medium i.on {
+  background: var(--color-mid);
+}
+.bp-seats.bp-high i.on {
+  background: var(--color-high);
+}
+.bp-seat-grid {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin: 7px 0;
+}
+.bp-seat {
+  display: block;
+  width: 100%;
+  height: 15px;
+  border-radius: 4px;
+  background: #d1d5db;
+}
+.bp-seat-available {
+  background: #2e9e44;
+}
+.bp-seat-occupied {
+  background: #dc3545;
+}
+.bp-seat-unavailable {
+  background: #9ca3af;
+}
+.bp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 9px;
+  margin: 4px 0 7px;
+  color: #5b6f8c;
+  font-size: 10px;
+}
+.bp-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.bp-legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+.bp-line {
+  margin-top: 3px !important;
+  font-size: 13px;
+  color: #26405f;
+}
+.bp-note {
+  margin-top: 6px !important;
+  font-size: 12px;
+  color: #5b6f8c;
+}
+.bp-d-ok {
+  color: var(--color-low);
+  font-weight: 700;
+}
+.bp-d-warn {
+  color: var(--color-mid);
+  font-weight: 700;
+}
+.bp-d-bad {
+  color: var(--color-high);
+  font-weight: 700;
+}

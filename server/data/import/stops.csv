@@ -1,0 +1,49 @@
+id,name,nameKn,aliases,lat,lng,radiusM,verified
+s_cbs,Mysuru City Bus Stand,ಮೈಸೂರು ನಗರ ಬಸ್ ನಿಲ್ದಾಣ,city bus stand|cbs|bus stand|nagara bus stand,12.3086,76.6504,50,false
+s_palace,Mysore Palace (South Gate),ಮೈಸೂರು ಅರಮನೆ,palace|mysore palace|mysuru palace|amba vilas|aramane,12.304,76.6552,40,false
+s_lalitha,Lalitha Mahal Junction,ಲಲಿತ ಮಹಲ್,lalitha mahal|lalitha mahal palace,12.2992,76.6742,40,false
+s_chamundi_base,Chamundi Hill Base,ಚಾಮುಂಡಿ ಬೆಟ್ಟದ ತಪ್ಪಲು,chamundi hill foot|chamundi base|hill base,12.284,76.6718,40,false
+s_chamundi_temple,Chamundi Hills Temple,ಚಾಮುಂಡಿ ಬೆಟ್ಟ,chamundi hills|chamundi hill|chamundi betta|chamundeshwari temple|chamundi,12.2737,76.6702,50,false
+s_zoo,Mysuru Zoo,ಮೈಸೂರು ಮೃಗಾಲಯ,zoo|mysore zoo|chamarajendra zoo|mrugalaya,12.3015,76.659,40,false
+s_karanji,Karanji Lake,ಕರಂಜಿ ಕೆರೆ,karanji|karanji kere,12.3025,76.664,40,false
+s_devaraja,Devaraja Market,ದೇವರಾಜ ಮಾರುಕಟ್ಟೆ,devaraja|devaraja mohalla|market,12.307,76.6522,40,false
+s_ramaswamy,Ramaswamy Circle,ರಾಮಸ್ವಾಮಿ ವೃತ್ತ,ramaswamy|ramaswamy circle,12.303,76.644,40,false
+s_saraswathi,Saraswathipuram,ಸರಸ್ವತಿಪುರಂ,saraswathipuram|saraswati puram,12.2995,76.633,40,false
+s_kuvempunagar,Kuvempunagar,ಕುವೆಂಪುನಗರ,kuvempu nagar|kuvempunagar bus stand,12.2896,76.6225,50,false
+s_railway,Mysuru Railway Station,ಮೈಸೂರು ರೈಲ್ವೆ ನಿಲ್ದಾಣ,railway station|mysore junction|mysuru junction|train station|railway,12.3135,76.644,50,false
+s_kukkarahalli,Kukkarahalli Lake,ಕುಕ್ಕರಹಳ್ಳಿ ಕೆರೆ,kukkarahalli|kukkarahalli kere,12.3105,76.636,40,false
+s_univ,Manasagangotri,ಮಾನಸಗಂಗೋತ್ರಿ,university of mysore|manasagangothri|uom,12.3085,76.623,40,false
+s_vijayanagar,Vijayanagar,ವಿಜಯನಗರ,vijayanagara|vijay nagar,12.329,76.621,50,falses_hardinge_circle,Hardinge Circle,,hardinge circle,12.307154,76.660132,60,false
+s_gun_house_circle,Gun House Circle,,gun house circle|gun house,12.301917,76.654824,60,false
+s_vontikoppal,Vontikoppal,,vontikoppal,12.326628,76.632246,60,false
+s_bannimantap,Bannimantap,,bannimantap,12.332569,76.651739,60,false
+s_hebbal,Hebbal,,hebbal,12.357989,76.610508,60,false
+s_hootagalli,Hootagalli,,hootagalli,12.335646,76.594500,60,false
+s_metagalli,Metagalli,,metagalli,12.347751,76.629817,60,false
+s_gokulam,Gokulam,,gokulam,12.326099,76.628297,60,false
+s_jayalakshmipuram,Jayalakshmipuram,,jayalakshmipuram,12.322416,76.621774,60,false
+s_yadavagiri,Yadavagiri,,yadavagiri,12.327919,76.639152,60,false
+s_nazarbad,Nazarbad,,nazarbad,12.309333,76.665753,60,false
+s_lashkar_mohalla,Lashkar Mohalla,,lashkar mohalla,12.311781,76.662133,60,false
+s_ashokapuram,Ashokapuram,,ashokapuram,12.274088,76.636011,60,false
+s_bogadi,Bogadi,,bogadi,12.300647,76.598389,60,false
+s_srirampura,Srirampura,,srirampura,12.263727,76.622815,60,false
+s_hinkal,Hinkal,,hinkal,12.329964,76.600741,60,false
+s_kesare,Kesare,,kesare,12.343312,76.662800,60,false
+s_mandi_mohalla,Mandi Mohalla,,mandi mohalla,12.316872,76.653906,60,false
+s_agrahara,Agrahara,,agrahara,12.297491,76.655947,60,false
+s_jss_hospital_mysuru,JSS Hospital Mysuru,,jss hospital mysuru|jss hospital,12.295970,76.655253,60,false
+s_infosys_mysuru,Infosys Mysuru,,infosys mysuru|infosys,12.363441,76.596100,60,false
+s_mandakalli,Mandakalli,,mandakalli,12.234649,76.651409,60,false
+s_teresian_college,teresian college,,teresian college,12.305767,76.690700,60,false
+s_chamundipuram,Chamundipuram,,chamundipuram,12.288581,76.648152,60,false
+s_lakshmipuram,Lakshmipuram,,lakshmipuram,12.295988,76.645566,60,false
+s_ramakrishnanagar,Ramakrishnanagar,,ramakrishnanagar,12.292717,76.616686,60,false
+s_vidyaranyapuram,Vidyaranyapuram,,vidyaranyapuram,12.279299,76.649605,60,false
+s_dattagalli,Dattagalli,,dattagalli,12.283171,76.606114,60,false
+s_udayagiri,Udayagiri,,udayagiri,12.325033,76.675133,60,false
+s_rajendranagar,Rajendranagar,,rajendranagar,12.332400,76.667229,60,false
+s_shivarampet,Shivarampet,,shivarampet,12.311976,76.648771,60,false
+s_race_course_mysuru,Race Course Mysuru,,race course mysuru|race course,12.297152,76.670766,60,false
+s_devegowda_circle,Devegowda Circle,,devegowda|devegowda circle,12.3105,76.6420,60,false
+s_teresian_circle,Teresian Circle,,teresian|teresian circle,12.3000,76.6500,60,falses_hardinge_circle,Hardinge Circle,,hardinge circle,12.307154,76.660132,60,false

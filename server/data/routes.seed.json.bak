@@ -1,0 +1,62 @@
+[
+  {
+    "id": "r201",
+    "number": "201",
+    "name": "City Bus Stand ⇄ Chamundi Hills",
+    "nameKn": "ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಚಾಮುಂಡಿ ಬೆಟ್ಟ",
+    "mlId": 1,
+    "demo": true,
+    "stopIds": [
+      "s_cbs",
+      "s_palace",
+      "s_lalitha",
+      "s_chamundi_base",
+      "s_chamundi_temple"
+    ]
+  },
+  {
+    "id": "r62",
+    "number": "62",
+    "name": "City Bus Stand ⇄ Zoo & Karanji Lake",
+    "nameKn": "ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಮೃಗಾಲಯ ಮತ್ತು ಕರಂಜಿ ಕೆರೆ",
+    "mlId": 2,
+    "demo": true,
+    "stopIds": [
+      "s_cbs",
+      "s_palace",
+      "s_zoo",
+      "s_karanji",
+      "s_lalitha"
+    ]
+  },
+  {
+    "id": "r44",
+    "number": "44",
+    "name": "City Bus Stand ⇄ Kuvempunagar",
+    "nameKn": "ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಕುವೆಂಪುನಗರ",
+    "mlId": 3,
+    "demo": true,
+    "stopIds": [
+      "s_cbs",
+      "s_devaraja",
+      "s_ramaswamy",
+      "s_saraswathi",
+      "s_kuvempunagar"
+    ]
+  },
+  {
+    "id": "r33",
+    "number": "33",
+    "name": "City Bus Stand ⇄ Vijayanagar",
+    "nameKn": "ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ವಿಜಯನಗರ",
+    "mlId": 4,
+    "demo": true,
+    "stopIds": [
+      "s_cbs",
+      "s_railway",
+      "s_kukkarahalli",
+      "s_univ",
+      "s_vijayanagar"
+    ]
+  }
+]

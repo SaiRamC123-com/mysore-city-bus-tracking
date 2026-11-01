@@ -1,0 +1,53 @@
+# One place per line. Text after | is other names people use for it, separated by ;
+# Lines starting with # are ignored. Then run:  npm run geocode
+Devegowda Circle
+Teresian Circle | teresian; teresian college circle
+halekesare 
+# --- starter list: names of Mysuru areas and circles that I believe exist. ---
+# The geocoder only keeps what OpenStreetMap finds inside Mysuru. CHECK EACH POSITION ON A MAP.
+# Delete lines you don't want and add your own (there are 123+ circles; add the rest).
+Mysuru Sub Urban Bus Stand | suburban bus stand; sbs
+Hardinge Circle
+Gun House Circle | gun house
+KR Circle | krishnaraja circle
+Chamaraja Circle
+Vontikoppal
+Bannimantap
+Hebbal
+Hootagalli
+Metagalli
+Gokulam
+Jayalakshmipuram
+Yadavagiri
+Nazarbad
+Lashkar Mohalla
+Ashokapuram
+Siddharthanagar
+Bogadi
+Srirampura
+Hinkal
+Rajivnagar
+Kesare
+Mandi Mohalla
+Agrahara
+JSS Hospital Mysuru | jss hospital
+Infosys Mysuru | infosys
+Mandakalli
+Bapuji Nagar
+vidya vikas institute of engineering and technology
+Ring Road Junction
+teresian college
+Chamundipuram
+Lakshmipuram
+Ramakrishnanagar
+Vidyaranyapuram
+Dattagalli
+Kalyangiri
+Udayagiri
+Rajendranagar
+Tilaknagar
+Shivarampet
+Santhepete
+Race Course Mysuru | race course
+Mysuru Dasara Exhibition Ground | exhibition grounds
+Mysuru Airport

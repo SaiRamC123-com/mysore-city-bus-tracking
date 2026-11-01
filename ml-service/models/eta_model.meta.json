@@ -1,0 +1,13 @@
+{
+  "data": "synthetic",
+  "rows": 30000,
+  "mae_seconds": 29.0,
+  "baseline_mae_seconds": 62.1,
+  "features": [
+    "route_id",
+    "hour",
+    "weekday",
+    "segment_m"
+  ],
+  "trained_at": "2026-10-26T08:18:50+00:00"
+}

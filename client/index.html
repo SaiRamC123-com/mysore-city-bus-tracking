@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1b2140" />
+    <title>Mysuru Bus</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Errors that happen before React starts (bad import, bad config) would leave a blank page.
+      window.addEventListener("error", function (e) {
+        var root = document.getElementById("root");
+        if (root && !root.children.length) {
+          root.innerHTML =
+            '<pre style="padding:24px;white-space:pre-wrap;font:14px system-ui">Startup error: ' +
+            String(e.message).replace(/</g, "&lt;") + "\n" + (e.filename || "") + ":" + (e.lineno || "") +
+            "\n\nSend this text, plus anything red in the console (F12).</pre>";
+        }
+      });
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

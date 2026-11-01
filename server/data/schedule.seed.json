@@ -1,0 +1,66 @@
+[
+  {
+    "routeId": "r201",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 15,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "r62",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 25,
+    "avgSpeedKmh": 16,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "r44",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 15,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "r33",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "rd_d1",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "rd_d2",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "rd_d3",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  },
+  {
+    "routeId": "rd_d4",
+    "firstDeparture": "06:00",
+    "lastDeparture": "21:00",
+    "headwayMin": 20,
+    "avgSpeedKmh": 18,
+    "dwellSec": 30
+  }
+]

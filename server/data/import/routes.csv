@@ -1,0 +1,9 @@
+id,number,name,nameKn,mlId,stops,firstDeparture,lastDeparture,headwayMin,avgSpeedKmh,dwellSec,demo
+r201,201,City Bus Stand ⇄ Chamundi Hills,ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಚಾಮುಂಡಿ ಬೆಟ್ಟ,1,s_cbs|s_palace|s_lalitha|s_chamundi_base|s_chamundi_temple,06:00,21:00,20,15,30,true
+r62,62,City Bus Stand ⇄ Zoo & Karanji Lake,ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಮೃಗಾಲಯ ಮತ್ತು ಕರಂಜಿ ಕೆರೆ,2,s_cbs|s_palace|s_zoo|s_karanji|s_lalitha,06:00,21:00,25,16,30,true
+r44,44,City Bus Stand ⇄ Kuvempunagar,ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ಕುವೆಂಪುನಗರ,3,s_cbs|s_devaraja|s_ramaswamy|s_saraswathi|s_kuvempunagar,06:00,21:00,15,18,30,true
+r33,33,City Bus Stand ⇄ Vijayanagar,ನಗರ ಬಸ್ ನಿಲ್ದಾಣ ⇄ ವಿಜಯನಗರ,4,s_cbs|s_railway|s_kukkarahalli|s_univ|s_vijayanagar,06:00,21:00,20,18,30,true
+rd_d1,D1,Demo D1: Kesare ⇄ Mandakalli,,3,s_kesare|s_bannimantap|s_mandi_mohalla|s_cbs|s_teresian_circle|s_lakshmipuram|s_jss_hospital_mysuru|s_chamundipuram|s_vidyaranyapuram|s_ashokapuram|s_mandakalli,06:00,21:00,20,18,30,true
+rd_d2,D2,Demo D2: Udayagiri ⇄ Srirampura,,3,s_udayagiri|s_rajendranagar|s_cbs|s_ramakrishnanagar|s_dattagalli|s_srirampura,06:00,21:00,20,18,30,true
+rd_d3,D3,Demo D3: teresian college ⇄ Bogadi,,3,s_teresian_college|s_nazarbad|s_lashkar_mohalla|s_cbs|s_devegowda_circle|s_bogadi,06:00,21:00,20,18,30,true
+rd_d4,D4,Demo D4: Race Course Mysuru ⇄ Infosys Mysuru,,3,s_race_course_mysuru|s_agrahara|s_gun_house_circle|s_cbs|s_shivarampet|s_yadavagiri|s_vontikoppal|s_gokulam|s_jayalakshmipuram|s_metagalli|s_hinkal|s_hootagalli|s_hebbal|s_infosys_mysuru,06:00,21:00,20,18,30,true
