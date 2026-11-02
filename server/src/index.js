@@ -3,7 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./config/env.js";
-import { usingMemory } from "./config/firebase.js";
+import { firebaseConfigured, memoryFallback, usingMemory } from "./config/firebase.js";
 import { getStatic } from "./services/dataService.js";
 import { mlHealth } from "./services/mlClient.js";
 import { apiLimiter, chatLimiter } from "./middleware/rateLimit.js";
@@ -24,11 +24,13 @@ app.use(morgan("dev"));
 app.get("/api/health", async (_req, res) => {
   res.json({
     ok: true,
-    db: usingMemory ? "memory (demo)" : "firebase",
+    db: memoryFallback ? "memory (demo fallback)" : usingMemory ? "memory (demo)" : "firebase",
+    firebaseConfigured,
+    persistentLiveData: !usingMemory,
     simulator: env.runSimulator,
     groqConfigured: !!env.groqKey,
     groqModel: env.groqModel,
-    driverEndpoint: !!env.driverSecret,
+    driverEndpoint: !!env.driverSecret && !usingMemory,
     ml: await mlHealth(),
     time: new Date().toISOString(),
   });

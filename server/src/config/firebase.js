@@ -3,9 +3,16 @@ import { env } from "./env.js";
 
 // usingMemory=true  -> everything lives in process memory (demo / tests)
 // usingMemory=false -> Firebase Realtime Database (live buses) + Firestore (everything else)
-export const usingMemory = env.useMemoryDb;
+const hasCredential = Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON) || existsSync(env.credPath);
+export const firebaseConfigured = hasCredential && Boolean(env.firebaseDbUrl);
+export const memoryFallback = !env.useMemoryDb && !firebaseConfigured;
+export const usingMemory = env.useMemoryDb || memoryFallback;
 export let rtdb = null;
 export let db = null;
+
+if (memoryFallback) {
+  console.warn("[firebase] Firebase credentials are missing; serving bundled demo data without persistent live-bus storage.");
+}
 
 if (!usingMemory) {
   let credential;
