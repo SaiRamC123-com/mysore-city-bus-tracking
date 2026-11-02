@@ -12,7 +12,7 @@ export const env = {
   firebaseDbUrl: process.env.FIREBASE_DATABASE_URL,
   credPath: process.env.GOOGLE_APPLICATION_CREDENTIALS || "./serviceAccountKey.json",
   groqKey: process.env.GROQ_API_KEY,
-  groqModel: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  groqModel: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
   mlUrl: (process.env.ML_SERVICE_URL || "").replace(/\/$/, ""),
   driverSecret: process.env.DRIVER_SECRET,
   runSimulator: bool(process.env.RUN_SIMULATOR),
