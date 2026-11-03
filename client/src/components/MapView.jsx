@@ -6,6 +6,11 @@ import { useI18n } from "../i18n/index.jsx";
 import { ROUTE_COLORS } from "../utils.js";
 
 const MYSURU = [12.3052, 76.6552];
+const tooltipNode = (text) => {
+  const node = L.DomUtil.create("span");
+  node.textContent = text;
+  return node;
+};
 
 /**
  * Plain Leaflet inside React: routes + stops drawn once, bus markers moved as new data arrives.
@@ -56,7 +61,15 @@ export default function MapView({ routes, buses, selectedBusId, onSelectBus, onS
     const bounds = [];
     const drawn = new Set();
     routes.forEach((r, i) => {
-      L.polyline(r.polyline, { color: ROUTE_COLORS[i % ROUTE_COLORS.length], weight: 4, opacity: 0.75 }).addTo(group);
+      const line = L.polyline(r.polyline, {
+        color: ROUTE_COLORS[i % ROUTE_COLORS.length],
+        weight: 4,
+        opacity: 0.75,
+        ...(r.source === "gtfs-upload" ? { dashArray: "8 6" } : {}),
+      }).addTo(group);
+      if (r.source === "gtfs-upload") {
+        line.bindTooltip(tooltipNode(`${r.number}: unverified GTFS upload${r.shapeApprox ? " - schematic between stops; no shapes.txt path" : ""}`));
+      }
       bounds.push(...r.polyline);
       for (const s of r.stops) {
         if (drawn.has(s.id)) continue; // shared stops are drawn once
@@ -67,7 +80,7 @@ export default function MapView({ routes, buses, selectedBusId, onSelectBus, onS
           : L.circleMarker([s.lat, s.lng], { radius: 6, color: "#0b2a5b", weight: 2, fillColor: "#ffffff", fillOpacity: 1 });
         const caption = role && focus?.[`${role}Text`] ? `${focus[`${role}Text`]}: ${s.name}` : s.name;
         marker
-          .bindTooltip(caption, role ? { permanent: true, direction: "top", offset: [0, -10] } : undefined)
+          .bindTooltip(tooltipNode(caption), role ? { permanent: true, direction: "top", offset: [0, -10] } : undefined)
           .on("click", () => onStop.current?.(s.id))
           .addTo(group);
       }
@@ -97,7 +110,7 @@ export default function MapView({ routes, buses, selectedBusId, onSelectBus, onS
     for (const s of allStops) {
       if (onRoute.has(s.id)) continue;
       L.circleMarker([s.lat, s.lng], { radius: 5, color: "#6b7280", weight: 2, fillColor: "#e5e7eb", fillOpacity: 1 })
-        .bindTooltip(s.name)
+        .bindTooltip(tooltipNode(s.name))
         .on("click", () => onStop.current?.(s.id))
         .addTo(group);
     }

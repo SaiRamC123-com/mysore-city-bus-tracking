@@ -3,20 +3,96 @@ import { orient } from "../utils/route.js";
 import { dayStartTs, parseHHMM, fmtClock } from "../utils/time.js";
 import { predictCrowd } from "./crowdService.js";
 
-/** Every scheduled departure of a route today, both directions. */
-export function tripsForDay(route, dayStart) {
+const calendarDate = (timestamp, timezone) => {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(timestamp);
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}${values.month}${values.day}`;
+};
+
+function serviceTimeToTimestamp(date, seconds, timezone) {
+  const year = Number(date.slice(0, 4));
+  const month = Number(date.slice(4, 6));
+  const day = Number(date.slice(6, 8));
+  const wallTime = Date.UTC(year, month - 1, day) + seconds * 1000;
+  let timestamp = wallTime;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const parts = new Intl.DateTimeFormat("en", {
+      timeZone: timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(timestamp);
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, Number(value)]));
+    const localAsUtc = Date.UTC(values.year, values.month - 1, values.day, values.hour, values.minute, values.second);
+    timestamp += wallTime - localAsUtc;
+  }
+  return timestamp;
+}
+
+function isServiceActive(service, date) {
+  if (!service) return false;
+  if (Object.hasOwn(service.exceptions ?? {}, date)) return service.exceptions[date];
+  if (!service.weekdays || date < service.startDate || date > service.endDate) return false;
+  const weekday = new Date(Date.UTC(Number(date.slice(0, 4)), Number(date.slice(4, 6)) - 1, Number(date.slice(6, 8)))).getUTCDay();
+  return service.weekdays[(weekday + 6) % 7] === true;
+}
+
+/** Every scheduled departure for the date containing timestamp, respecting GTFS calendars. */
+export function tripsForDay(route, timestamp) {
+  if (route.gtfsTrips?.length) {
+    if (!route.serviceCalendarAvailable) return [];
+    const date = calendarDate(timestamp, route.timezone);
+    return route.gtfsTrips
+      .filter((trip) => isServiceActive(trip.service, date))
+      .map((trip) => {
+        const stopTimes = trip.stopTimes.map((item) => ({
+          ...item,
+          arrivalTs: serviceTimeToTimestamp(date, item.arrivalSeconds, route.timezone),
+          departureTs: serviceTimeToTimestamp(date, item.departureSeconds, route.timezone),
+        }));
+        return {
+          routeId: route.id,
+          direction: 0,
+          departTs: stopTimes[0].departureTs,
+          hhmm: fmtClock(stopTimes[0].departureTs),
+          gtfs: true,
+          tripId: trip.gtfsTripId ?? trip.id,
+          stopTimes,
+        };
+      });
+  }
   const tt = route.timetable;
   if (!tt) return [];
+  const dayStart = dayStartTs(timestamp);
   const first = parseHHMM(tt.firstDeparture);
   const last = parseHHMM(tt.lastDeparture);
   const step = tt.headwayMin * 60_000;
   const out = [];
   for (let t = first; t <= last; t += step) {
-    for (const direction of [0, 1]) {
+    for (const direction of route.availableDirections) {
       out.push({ routeId: route.id, direction, departTs: dayStart + t, hhmm: fmtClock(dayStart + t) });
     }
   }
   return out;
+}
+
+export function tripsAround(route, timestamp) {
+  if (!route.gtfsTrips?.length) return tripsForDay(route, timestamp);
+  const serviceDate = calendarDate(timestamp, route.timezone);
+  const dayStart = serviceTimeToTimestamp(serviceDate, 0, route.timezone);
+  const previousServiceDate = tripsForDay(route, timestamp - 24 * 60 * 60_000)
+    .filter((trip) => trip.stopTimes.at(-1)?.arrivalTs >= dayStart);
+  const currentServiceDate = tripsForDay(route, timestamp);
+  return [...previousServiceDate, ...currentServiceDate];
 }
 
 const liveMatch = (trip, live, headwayMin) =>
@@ -31,9 +107,9 @@ export async function getTodaySchedule(routeQuery, now = Date.now()) {
   const live = await getLiveBuses({ routeId: route.id });
   const headway = route.timetable?.headwayMin ?? 20;
 
-  const trips = tripsForDay(route, dayStartTs(now)).map((t) => {
+  const trips = tripsAround(route, now).map((t) => {
     const o = orient(route, t.direction);
-    const base = { ...t, towards: o.towards, endTs: t.departTs + o.runMin * 60_000 };
+    const base = { ...t, towards: o.towards, endTs: t.stopTimes?.at(-1)?.arrivalTs ?? t.departTs + o.runMin * 60_000 };
     const bus = liveMatch(t, live, headway);
     if (bus) return { ...base, status: "running", busId: bus.busId, delayMin: bus.delayMin };
     if (t.departTs > now) return { ...base, status: "upcoming" };
@@ -83,15 +159,16 @@ export async function arrivalsAtStop(stopId, limit = 5, now = Date.now()) {
   const sched = [];
   for (const route of routeList) {
     const headway = route.timetable?.headwayMin ?? 20;
-    for (const direction of [0, 1]) {
+    for (const direction of route.availableDirections) {
       const o = orient(route, direction);
       const idx = o.stops.findIndex((s) => s.id === stopId);
       if (idx < 0 || idx === o.stops.length - 1) continue;
-      for (const t of tripsForDay(route, dayStartTs(now)).filter((x) => x.direction === direction)) {
-        const arr = t.departTs + o.stops[idx].offsetMin * 60_000;
+      for (const t of tripsAround(route, now).filter((x) => x.direction === direction)) {
+        const matchedTime = t.stopTimes?.find((item) => item.stopId === stopId);
+        const arr = matchedTime?.arrivalTs ?? t.departTs + o.stops[idx].offsetMin * 60_000;
         if (arr < now - 60_000 || arr > now + 90 * 60_000) continue;
         if (liveMatch(t, live, headway)) continue; // that trip is already tracked live
-        sched.push({ route, o, idx, arr });
+        sched.push({ route, o, idx, arr, trip: t });
       }
     }
   }
@@ -111,6 +188,10 @@ export async function arrivalsAtStop(stopId, limit = 5, now = Date.now()) {
         crowdPct: crowd[i].pct,
         crowdLevel: crowd[i].level,
         crowdSource: "forecast",
+        tripId: s.trip.gtfs ? s.trip.tripId : undefined,
+        tripStartTs: s.trip.departTs,
+        stopTimes: s.trip.stopTimes,
+        serviceCalendarAvailable: s.route.serviceCalendarAvailable,
       })
     );
   }
@@ -124,7 +205,7 @@ export async function routesAtStop(stopId) {
   const { routeList } = await getStatic();
   const out = [];
   for (const route of routeList) {
-    for (const direction of [0, 1]) {
+    for (const direction of route.availableDirections) {
       const o = orient(route, direction);
       const idx = o.stops.findIndex((s) => s.id === stopId);
       if (idx >= 0 && idx < o.stops.length - 1) {

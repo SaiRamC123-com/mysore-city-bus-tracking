@@ -13,6 +13,7 @@ export default function Home({ geo }) {
   const nav = useNavigate();
   const { buses, error } = useLiveBuses();
   const [routes, setRoutes] = useState([]);
+  const [routeSource, setRouteSource] = useState("");
       const [allStops, setAllStops] = useState([]);
   const [loadError, setLoadError] = useState("");
   const [filter, setFilter] = useState(null);
@@ -21,7 +22,10 @@ export default function Home({ geo }) {
   useEffect(() => {
     api
       .routes()
-      .then((d) => setRoutes(d.routes))
+      .then((d) => {
+        setRoutes(d.routes);
+        setRouteSource(d.sourceLabel);
+      })
             .catch((e) => setLoadError(e.message));
     api
       .stops()
@@ -47,6 +51,7 @@ export default function Home({ geo }) {
             {loadError || error}
           </p>
         )}
+        {routeSource && <p className="rounded-xl bg-lamp/25 p-3 text-xs ring-1 ring-lamp">{routeSource === "No imported route feed" ? t("routes.unavailable") : t("routes.unverified")}</p>}
 
         <div className="flex flex-wrap items-center gap-2">
           <button

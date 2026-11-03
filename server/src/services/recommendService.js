@@ -1,10 +1,11 @@
 import { getStatic, findStop, getLiveBuses } from "./dataService.js";
-import { arrivalsAtStop } from "./scheduleService.js";
+import { arrivalsAtStop, tripsAround } from "./scheduleService.js";
 import { orient } from "../utils/route.js";
 import { fmtClock, isLateNight } from "../utils/time.js";
 
 // Minutes of "pain" added to a bus's wait when it is crowded. Transparent on purpose, easy to tune.
 const CROWD_PENALTY = { low: 0, medium: 2, high: 8 };
+const gtfsClock = (seconds) => `${String(Math.floor(seconds / 3600)).padStart(2, "0")}:${String(Math.floor((seconds % 3600) / 60)).padStart(2, "0")}`;
 
 /**
  * "Which bus should I take from A to B right now?"
@@ -22,7 +23,7 @@ export async function recommend(fromQuery, toQuery, now = Date.now()) {
 
   const direct = []; // { route, o, iF, iT }
   for (const route of routeList) {
-    for (const direction of [0, 1]) {
+    for (const direction of route.availableDirections) {
       const o = orient(route, direction);
       const iF = o.stops.findIndex((s) => s.id === from.stop.id);
       const iT = o.stops.findIndex((s) => s.id === to.stop.id);
@@ -30,7 +31,7 @@ export async function recommend(fromQuery, toQuery, now = Date.now()) {
     }
   }
 
-  const result = { from: from.stop.name, to: to.stop.name, lateNight: isLateNight(now), options: [], scheduledOptions: [] };
+  const result = { from: from.stop.name, to: to.stop.name, lateNight: isLateNight(now), options: [], scheduledOptions: [], routeOptions: [] };
 
   if (!direct.length) {
     // No direct bus: look for a stop where one route from A meets one route to B.
@@ -47,6 +48,52 @@ export async function recommend(fromQuery, toQuery, now = Date.now()) {
     result.transfers = via.slice(0, 3);
     return result;
   }
+
+  result.routeOptions = direct
+    .filter(({ route }) => route.source === "gtfs-upload")
+    .map(({ route, o, iF, iT }) => {
+      const currentDayTrips = route.serviceCalendarAvailable ? tripsAround(route, now) : [];
+      const times = currentDayTrips.length
+        ? currentDayTrips
+          .map((trip) => ({
+            from: trip.stopTimes.find((item) => item.stopId === from.stop.id),
+            to: trip.stopTimes.find((item) => item.stopId === to.stop.id),
+          }))
+          .filter(({ from: first, to: last }) => first && last && first.departureTs >= now - 60_000)
+          .sort((a, b) => a.from.departureTs - b.from.departureTs)
+          .slice(0, 3)
+          .map(({ from: first, to: last }) => ({
+            departure: fmtClock(first.departureTs),
+            arrival: fmtClock(last.arrivalTs),
+            scheduledForToday: true,
+          }))
+        : route.gtfsTrips
+          .map((trip) => ({
+            from: trip.stopTimes.find((item) => item.stopId === from.stop.id),
+            to: trip.stopTimes.find((item) => item.stopId === to.stop.id),
+          }))
+          .filter(({ from: first, to: last }) => first && last)
+          .sort((a, b) => a.from.departureSeconds - b.from.departureSeconds)
+          .slice(0, 3)
+          .map(({ from: first, to: last }) => ({
+            departure: gtfsClock(first.departureSeconds),
+            arrival: gtfsClock(last.arrivalSeconds),
+            scheduledForToday: false,
+          }));
+      return {
+        routeId: route.id,
+        routeNumber: route.number,
+        routeName: route.name,
+        destination: o.towards,
+        from: from.stop.name,
+        to: to.stop.name,
+        intermediateStops: o.stops.slice(iF + 1, iT).map((stop) => stop.name),
+        sourceLabel: "Unverified GTFS upload",
+        verified: false,
+        serviceCalendarAvailable: route.serviceCalendarAvailable,
+        times,
+      };
+    });
 
   for (const { route, o, iF, iT } of direct) {
     for (const b of live) {
@@ -87,12 +134,14 @@ export async function recommend(fromQuery, toQuery, now = Date.now()) {
       routeId: a.routeId,
       direction: a.direction,
       // when this trip leaves its first stop (whole minutes), so the app can open the trip's own page
-      tripStartTs: Math.round((a.scheduledTs - match.o.stops[match.iF].offsetMin * 60_000) / 60_000) * 60_000,
+      tripStartTs: a.tripStartTs ?? Math.round((a.scheduledTs - match.o.stops[match.iF].offsetMin * 60_000) / 60_000) * 60_000,
       routeNumber: a.routeNumber,
       towards: a.towards,
       departsTs: a.scheduledTs,
       waitMin: a.etaMin,
-      rideMin: Math.round(match.o.stops[match.iT].offsetMin - match.o.stops[match.iF].offsetMin),
+      rideMin: a.stopTimes?.length
+        ? Math.round((a.stopTimes.find((item) => item.stopId === to.stop.id)?.arrivalTs - a.stopTimes.find((item) => item.stopId === from.stop.id)?.departureTs) / 60_000)
+        : Math.round(match.o.stops[match.iT].offsetMin - match.o.stops[match.iF].offsetMin),
       crowdPct: a.crowdPct,
       crowdLevel: a.crowdLevel,
     });
@@ -102,7 +151,9 @@ export async function recommend(fromQuery, toQuery, now = Date.now()) {
   // Plain-language advice (the chatbot rephrases this; the UI shows it as is).
   const opts = result.options;
   if (!opts.length && !result.scheduledOptions.length) {
-    result.advice = "No bus is being tracked on this route right now and none is scheduled in the next 90 minutes.";
+    result.advice = result.routeOptions.some((route) => !route.serviceCalendarAvailable)
+      ? "No bus is being tracked on this route right now. The GTFS service calendar is unavailable, so today's departures cannot be confirmed."
+      : "No bus is being tracked on this route right now and none is scheduled in the next 90 minutes.";
   } else if (!opts.length) {
     const s = result.scheduledOptions[0];
     result.advice = `No bus is live yet. The next scheduled bus is route ${s.routeNumber} at ${fmtClock(s.departsTs)} (expected crowd ~${s.crowdPct}%).`;

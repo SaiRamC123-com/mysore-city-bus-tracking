@@ -114,11 +114,12 @@ async function tick(bus, now) {
 
 export async function startSimulator({ busesPerRoute = 2 } = {}) {
   const { routeList } = await getStatic();
+  const demoRoutes = routeList.filter((route) => route.demo);
   const now = Date.now();
   const day = dayStartTs(now);
   const buses = [];
 
-  for (const route of routeList) {
+  for (const route of demoRoutes) {
     let idx = 0;
     const running = [];
     for (const t of tripsForDay(route, day)) {

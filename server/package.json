@@ -12,8 +12,9 @@
     "start": "node src/index.js",
     "seed": "node scripts/seed.js",
     "import": "node scripts/import_csv.js",
+    "import:gtfs": "node scripts/import_gtfs.js",
     "geocode": "node scripts/geocode_stops.js",
-        "demo-routes": "node scripts/make_demo_routes.js",
+    "demo-routes": "node scripts/make_demo_routes.js",
     "build-data": "node scripts/make_demo_routes.js && node scripts/import_csv.js && node scripts/seed.js",
     "simulate": "node scripts/simulator.js",
     "export:training": "node scripts/export_training_data.js",
@@ -28,6 +29,7 @@
     "groq-sdk": "^1.6.0",
     "helmet": "^8.3.0",
     "morgan": "^1.12.1",
+    "yauzl": "^3.4.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

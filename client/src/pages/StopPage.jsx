@@ -88,7 +88,7 @@ export default function StopPage() {
         <h2 id="next-buses" className="mb-2 font-display text-xl font-extrabold">
           {t("stop.next")}
         </h2>
-        {data && <ArrivalList arrivals={data.arrivals} />}
+        {data && <ArrivalList arrivals={data.arrivals} serviceCalendarAvailable={data.serviceCalendarAvailable} />}
       </section>
 
       {forecast?.series?.length > 0 && (

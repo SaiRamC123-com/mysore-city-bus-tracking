@@ -15,6 +15,7 @@ export const env = {
   groqModel: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
   mlUrl: (process.env.ML_SERVICE_URL || "").replace(/\/$/, ""),
   driverSecret: process.env.DRIVER_SECRET,
+  gtfsImportSecret: process.env.GTFS_IMPORT_SECRET,
   runSimulator: bool(process.env.RUN_SIMULATOR),
   simBusesPerRoute: Number(process.env.SIM_BUSES_PER_ROUTE || 2),
   festivalMode: bool(process.env.FESTIVAL_MODE),

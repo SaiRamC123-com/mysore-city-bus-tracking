@@ -14,29 +14,77 @@ const mem = { live: {}, events: [], crowd: [] };
 // ---------------------------------------------------------------- static data
 let cache = null;
 let cacheAt = 0;
+export function invalidateStaticCache() {
+  cache = null;
+  cacheAt = 0;
+}
 
-async function loadRaw() {
-  if (usingMemory) {
-    return { stops: readSeed("stops.seed.json"), routes: readSeed("routes.seed.json"), timetables: readSeed("schedule.seed.json") };
+function makeStatic({ stops: stopRows, routes: routeRows, timetables = [], trips = [], services = {}, metadata = null }) {
+  const stops = Object.fromEntries(stopRows.map((stop) => [stop.id, stop]));
+  const timetableByRoute = Object.fromEntries(timetables.map((item) => [item.routeId ?? item.id, item]));
+  const tripsByRoute = new Map();
+  for (const trip of trips) {
+    const routeTrips = tripsByRoute.get(trip.routeId) ?? [];
+    routeTrips.push(trip);
+    tripsByRoute.set(trip.routeId, routeTrips);
   }
-  const get = async (c) => (await db.collection(c).get()).docs.map((d) => ({ id: d.id, ...d.data() }));
-  const [stops, routes, timetables] = await Promise.all([get("stops"), get("routes"), get("timetables")]);
-  if (!stops.length || !routes.length) {
-    throw new Error("Firestore has no stops/routes yet. Run `npm run seed` inside /server first.");
-  }
-  return { stops, routes, timetables };
+  const routes = Object.fromEntries(routeRows.map((row) => {
+    const route = buildRoute(row, stops, timetableByRoute[row.id]);
+    route.gtfsTrips = (tripsByRoute.get(row.id) ?? []).map((trip) => ({
+      ...trip,
+      service: metadata?.services?.[trip.serviceId] ?? null,
+    }));
+    route.serviceCalendarAvailable = metadata?.serviceCalendarAvailable ?? false;
+    route.timezone = metadata?.timezone ?? "Asia/Kolkata";
+    return [row.id, route];
+  }));
+  return { stops, routes, routeList: Object.values(routes), metadata };
+}
+
+async function loadImportedRaw() {
+  if (!db || usingMemory) return { stops: [], routes: [], trips: [], services: {}, metadata: null };
+  const active = await db.collection("gtfs").doc("active").get();
+  if (!active.exists || !active.data()?.feedId) return { stops: [], routes: [], trips: [], services: {}, metadata: null };
+  const { feedId, ...metadata } = active.data();
+  const feed = db.collection("gtfs_feeds").doc(feedId);
+  const read = async (name) => (await feed.collection(name).get()).docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const [stops, routes, trips, serviceRows] = await Promise.all([
+    read("stops"),
+    read("routes"),
+    read("trips"),
+    read("services"),
+  ]);
+  return {
+    stops,
+    routes,
+    trips,
+    services: Object.fromEntries(serviceRows.map(({ serviceId, ...service }) => [serviceId, service])),
+    metadata: {
+      ...metadata,
+      feedId,
+      services: Object.fromEntries(serviceRows.map(({ serviceId, ...service }) => [serviceId, service])),
+    },
+  };
 }
 
 /** Stops, routes (with polylines and timetable) — cached for 5 minutes. */
 export async function getStatic(force = false) {
   if (cache && !force && Date.now() - cacheAt < 5 * 60_000) return cache;
-  const raw = await loadRaw();
-  const stops = Object.fromEntries(raw.stops.map((s) => [s.id, s]));
-  const tt = Object.fromEntries(raw.timetables.map((t) => [t.routeId ?? t.id, t]));
-  const routes = Object.fromEntries(raw.routes.map((r) => [r.id, buildRoute(r, stops, tt[r.id])]));
-  cache = { stops, routes, routeList: Object.values(routes) };
+  const raw = await loadImportedRaw();
+  cache = makeStatic({ ...raw, timetables: [], metadata: raw.metadata });
   cacheAt = Date.now();
   return cache;
+}
+
+let practiceCache = null;
+export async function getPracticeStatic(force = false) {
+  if (practiceCache && !force) return practiceCache;
+  practiceCache = makeStatic({
+    stops: readSeed("stops.seed.json"),
+    routes: readSeed("routes.seed.json"),
+    timetables: readSeed("schedule.seed.json"),
+  });
+  return practiceCache;
 }
 
 const norm = (s) =>
@@ -111,8 +159,10 @@ export async function deleteLive(busId) {
 /** Live buses that reported recently. Optional filters: routeNumber, routeId. */
 export async function getLiveBuses({ routeNumber, routeId } = {}) {
   const now = Date.now();
+  const { routes } = await getStatic();
+  const activeRouteIds = new Set(Object.keys(routes));
   let list = Object.values(await readLive())
-    .filter((b) => b && now - b.updatedAt < STALE_MS)
+    .filter((b) => b && b.source !== "simulator" && activeRouteIds.has(b.routeId) && now - b.updatedAt < STALE_MS)
     .map((b) => ({ ...b, nextStops: b.nextStops || [], passed: b.passed || [] }));
   if (routeNumber) list = list.filter((b) => String(b.routeNumber).toLowerCase() === String(routeNumber).toLowerCase());
   if (routeId) list = list.filter((b) => b.routeId === routeId);

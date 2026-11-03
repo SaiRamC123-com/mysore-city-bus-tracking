@@ -62,13 +62,14 @@ export default function Driver() {
 
   useEffect(() => {
     api
-      .routes()
+      .routes(practice)
       .then((d) => {
         setRoutes(d.routes);
-        setRouteId((r) => r || d.routes[0]?.id || "");
+        setRouteId((current) => d.routes.some((route) => route.id === current) ? current : d.routes[0]?.id || "");
+        setDirection((current) => d.routes.some((route) => route.availableDirections?.includes(current)) ? current : d.routes[0]?.availableDirections?.[0] ?? 0);
       })
       .catch((e) => setError(e.message));
-  }, []);
+  }, [practice]);
 
   useEffect(() => {
     if (!routeId) return undefined;
@@ -77,6 +78,18 @@ export default function Driver() {
     setTripStartTs(0);
     setTripsLoading(true);
     setError("");
+    if (practice) {
+      const selectedRoute = routes.find((route) => route.id === routeId);
+      if (selectedRoute) {
+        const now = Date.now();
+        const from = direction === 1 ? selectedRoute.stops.at(-1)?.name : selectedRoute.stops[0]?.name;
+        const towards = direction === 1 ? selectedRoute.stops[0]?.name : selectedRoute.stops.at(-1)?.name;
+        setTrips([{ departTs: now, from, towards }]);
+        setTripStartTs(now);
+      }
+      setTripsLoading(false);
+      return undefined;
+    }
     api
       .trips(routeId, direction)
       .then((d) => {
@@ -90,7 +103,7 @@ export default function Driver() {
     return () => {
       alive = false;
     };
-  }, [routeId, direction]);
+  }, [routeId, direction, practice, routes]);
 
   const sendPing = async () => {
     const c = latest.current;
@@ -104,6 +117,13 @@ export default function Driver() {
       pos = { lat: step.lat, lng: step.lng, accuracy: 10, ts: Date.now() };
       speedKmh = step.speedKmh;
       finished = step.done;
+      setLast({ practice: true, at: Date.now(), lat: pos.lat, lng: pos.lng });
+      setError("");
+      if (finished) {
+        setPracticeNote(t("driver.practiceDone"));
+        stop();
+      }
+      return;
     } else {
       if (!pos) return; // still waiting for the first GPS fix
       const problem = gpsProblem(pos);
@@ -135,7 +155,6 @@ export default function Driver() {
         capacity: c.capacity,
         seatCapacity: c.seatCapacity,
         standingPassengers: c.counted ? c.standingPassengers : null,
-        ...(c.practice ? { practice: true } : {}),
       });
       setLast({ ...out, at: Date.now() });
       setError("");
@@ -191,7 +210,7 @@ export default function Driver() {
     wakeLock.current?.release?.().catch(() => {});
   }
 
-  const ready = secret && BUS_ID.test(busId) && routeId && (practice || tripStartTs);
+  const ready = routeId && (practice || (secret && BUS_ID.test(busId) && tripStartTs));
   const bump = (n) => {
     setCounted(true);
     const next = Math.max(0, Math.min(capacity, count + n));
@@ -209,11 +228,11 @@ export default function Driver() {
       <p className="text-sm text-ink/70">{t("driver.https")}</p>
 
       <fieldset disabled={running} className="space-y-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-ink/10">
-        <label className="block text-sm font-semibold">
+        {!practice && <label className="block text-sm font-semibold">
           {t("driver.secret")}
           <input type="password" value={secret} onChange={(e) => setSecret(e.target.value)} className={`${input} mt-1 font-normal`} autoComplete="off" />
-        </label>
-        <label className="block text-sm font-semibold">
+        </label>}
+        {!practice && <label className="block text-sm font-semibold">
           {t("driver.busId")}
           <input
             value={busId}
@@ -230,7 +249,7 @@ export default function Driver() {
             maxLength={32}
           />
           {busId && !BUS_ID.test(busId) && <span className="text-xs font-normal text-high">{t("driver.busIdHint")}</span>}
-        </label>
+        </label>}
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-sm font-semibold">
             {t("driver.route")}
@@ -245,8 +264,9 @@ export default function Driver() {
           <label className="block text-sm font-semibold">
             {t("driver.direction")}
             <select value={direction} onChange={(e) => setDirection(Number(e.target.value))} className={`${input} mt-1 font-normal`}>
-              <option value={0}>{t("driver.outbound")}</option>
-              <option value={1}>{t("driver.inbound")}</option>
+              {(routes.find((route) => route.id === routeId)?.availableDirections ?? [0, 1]).map((availableDirection) => (
+                <option key={availableDirection} value={availableDirection}>{availableDirection === 0 ? t("driver.outbound") : t("driver.inbound")}</option>
+              ))}
             </select>
           </label>
         </div>
@@ -355,13 +375,19 @@ export default function Driver() {
       {running && (
         <p className="rounded-xl bg-white p-3 text-sm ring-1 ring-ink/10" aria-live="polite">
           {practice
-            ? t("driver.practiceOn")
+            ? `${t("driver.practiceOn")} Demo route data and GPS simulation are not live service data.`
             : !geo.pos
               ? t("driver.waitingGps")
               : last
                 ? t("driver.sharing", { acc: Math.round(geo.pos.accuracy ?? 0) })
                 : t("driver.connecting", { acc: Math.round(geo.pos.accuracy ?? 0) })}
-          {last && (
+          {practice && last && (
+            <>
+                <br />
+                {t("driver.practiceLocation", { lat: last.lat.toFixed(5), lng: last.lng.toFixed(5) })}
+            </>
+          )}
+          {last && !practice && (
             <>
               <br />
               {t("driver.sent", { time: clock(last.at) })}

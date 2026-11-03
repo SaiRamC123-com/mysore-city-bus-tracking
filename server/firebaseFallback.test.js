@@ -5,17 +5,21 @@ import { test } from "node:test";
 
 const serverDir = fileURLToPath(new URL(".", import.meta.url));
 
-test("missing Firebase production credentials use bundled data without crashing the API", () => {
+test("missing Firebase credentials do not expose practice seed routes to production APIs", () => {
   const script = `
     const firebase = await import("./src/config/firebase.js");
-    const { getStatic } = await import("./src/services/dataService.js");
+    const { getStatic, getPracticeStatic } = await import("./src/services/dataService.js");
     const data = await getStatic();
+    const practice = await getPracticeStatic();
     console.log(JSON.stringify({
       usingMemory: firebase.usingMemory,
       firebaseConfigured: firebase.firebaseConfigured,
       memoryFallback: firebase.memoryFallback,
       routeCount: data.routeList.length,
       stopCount: Object.keys(data.stops).length,
+      practiceRouteCount: practice.routeList.length,
+      practiceStopCount: Object.keys(practice.stops).length,
+      practiceRoutesAreDemo: practice.routeList.every((route) => route.demo),
     }));
   `;
   const result = spawnSync(process.execPath, ["--input-type=module", "-e", script], {
@@ -35,6 +39,9 @@ test("missing Firebase production credentials use bundled data without crashing 
   assert.equal(status.usingMemory, true);
   assert.equal(status.firebaseConfigured, false);
   assert.equal(status.memoryFallback, true);
-  assert.ok(status.routeCount > 0);
-  assert.ok(status.stopCount > 0);
+  assert.equal(status.routeCount, 0);
+  assert.equal(status.stopCount, 0);
+  assert.ok(status.practiceRouteCount > 0);
+  assert.ok(status.practiceStopCount > 0);
+  assert.equal(status.practiceRoutesAreDemo, true);
 });

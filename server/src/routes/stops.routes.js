@@ -9,8 +9,13 @@ import { dayStartTs } from "../utils/time.js";
 const r = Router();
 
 r.get("/stops", ah(async (_req, res) => {
-  const { stops } = await getStatic();
-  res.json({ stops: Object.values(stops).map(({ id, name, nameKn, aliases, lat, lng, radiusM, verified }) => ({ id, name, nameKn, aliases: aliases || [], lat, lng, radiusM, verified })) });
+  const { stops, metadata } = await getStatic();
+  res.json({
+    sourceLabel: metadata?.sourceLabel ?? "No imported route feed",
+    verified: metadata?.verified ?? false,
+    serviceCalendarAvailable: metadata?.serviceCalendarAvailable ?? false,
+    stops: Object.values(stops).map(({ id, name, nameKn, aliases, lat, lng, radiusM, verified, source }) => ({ id, name, nameKn, aliases: aliases || [], lat, lng, radiusM, verified, source })),
+  });
 }));
 
 async function stopOr404(idOrName) {
@@ -22,8 +27,14 @@ async function stopOr404(idOrName) {
 // Scheduled / predicted arrival times of the next buses at a stop.
 r.get("/stops/:id/arrivals", ah(async (req, res) => {
   const stop = await stopOr404(req.params.id);
+  const { metadata } = await getStatic();
   const limit = Math.min(12, Number(req.query.limit) || 6);
-  res.json({ stop: { id: stop.id, name: stop.name, nameKn: stop.nameKn }, now: Date.now(), arrivals: await arrivalsAtStop(stop.id, limit) });
+  res.json({
+    stop: { id: stop.id, name: stop.name, nameKn: stop.nameKn },
+    now: Date.now(),
+    serviceCalendarAvailable: metadata?.serviceCalendarAvailable ?? false,
+    arrivals: await arrivalsAtStop(stop.id, limit),
+  });
 }));
 
 // "When is this stop busy?" hourly crowd forecast for every route serving the stop.
@@ -33,7 +44,7 @@ r.get("/stops/:id/forecast", ah(async (req, res) => {
   const dayStart = dayStartTs(Date.now());
   const series = [];
   for (const route of routeList) {
-    for (const direction of [0, 1]) {
+    for (const direction of route.availableDirections) {
       const o = orient(route, direction);
       const idx = o.stops.findIndex((s) => s.id === stop.id);
       if (idx < 0 || idx === o.stops.length - 1) continue;

@@ -6,11 +6,11 @@ import { clock, delayInfo } from "../utils.js";
 const TONE = { ok: "text-low", warn: "text-mid", bad: "text-high" };
 
 /** Upcoming buses at one stop: scheduled time, live predicted time (± margin), delay, crowd. */
-export default function ArrivalList({ arrivals }) {
+export default function ArrivalList({ arrivals, serviceCalendarAvailable }) {
   const { t } = useI18n();
 
   if (!arrivals?.length) {
-    return <p className="rounded-xl bg-white p-4 text-sm text-ink/70">{t("arrival.none")}</p>;
+    return <p className="rounded-xl bg-white p-4 text-sm text-ink/70">{serviceCalendarAvailable ? t("arrival.none") : t("arrival.calendarUnavailable")}</p>;
   }
 
   return (

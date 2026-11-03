@@ -11,7 +11,7 @@ export let rtdb = null;
 export let db = null;
 
 if (memoryFallback) {
-  console.warn("[firebase] Firebase credentials are missing; serving bundled demo data without persistent live-bus storage.");
+  console.warn("[firebase] Firebase credentials are missing; persistent live-bus storage and GTFS imports are unavailable.");
 }
 
 if (!usingMemory) {

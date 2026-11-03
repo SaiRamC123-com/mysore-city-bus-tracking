@@ -29,9 +29,9 @@ export default function ScheduledTrip() {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
-    api.routePlan(routeId, dir).then(setPlan).catch((e) => setError(e.message));
+    api.routePlan(routeId, dir, tripStartTs).then(setPlan).catch((e) => setError(e.message));
     api.routes().then((d) => setRoute(d.routes.find((r) => r.id === routeId) ?? null)).catch(() => {});
-  }, [routeId, dir]);
+  }, [routeId, dir, tripStartTs]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);

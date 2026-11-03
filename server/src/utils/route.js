@@ -23,6 +23,14 @@ export function buildRoute(def, stopsById, timetable) {
     nameKn: def.nameKn,
     mlId: def.mlId ?? 0,
     demo: !!def.demo,
+    source: def.source ?? (def.demo ? "practice-data" : "route-data"),
+    verified: def.verified ?? !def.demo,
+    shapeApprox: !!def.shapeApprox,
+    allowReverse: def.allowReverse !== false,
+    availableDirections: def.availableDirections ?? [0, 1],
+    gtfsRouteId: def.gtfsRouteId ?? null,
+    gtfsDirectionId: def.gtfsDirectionId ?? null,
+    routeType: def.routeType ?? null,
     polyline,
     cum,
     lengthM: cum[cum.length - 1],
@@ -61,6 +69,9 @@ const orientCache = new WeakMap();
  * Every stop in the returned route has alongM, offsetMin and departOffsetMin for that direction.
  */
 export function orient(route, dir) {
+  if (!route.availableDirections.includes(dir) || (dir === 1 && !route.allowReverse)) {
+    throw new Error(`Direction ${dir} is not available for route ${route.number}.`);
+  }
   let pair = orientCache.get(route);
   if (!pair) {
     pair = {};

@@ -17,6 +17,7 @@ export function useLiveBuses() {
   const [raw, setRaw] = useState([]);
   const [error, setError] = useState("");
   const [tick, setTick] = useState(0);
+  const [routeIds, setRouteIds] = useState(null);
   const [mode, setMode] = useState(rtdb ? "firebase" : "polling");
   const [ready, setReady] = useState(false);
 
@@ -24,6 +25,9 @@ export function useLiveBuses() {
     let alive = true;
     let stop = () => {};
     const giveUp = setTimeout(() => alive && setReady(true), 4000); // never leave the page blank if nothing answers
+    api.routes()
+      .then((data) => alive && setRouteIds(new Set(data.routes.map((route) => route.id))))
+      .catch((e) => alive && setError(e.message));
 
     const poll = () => {
       setMode("polling");
@@ -81,6 +85,6 @@ export function useLiveBuses() {
 
   const now = Date.now();
   void tick;
-  const buses = raw.filter((b) => now - b.updatedAt < STALE_MS);
+  const buses = raw.filter((b) => routeIds?.has(b.routeId) && b.source !== "simulator" && now - b.updatedAt < STALE_MS);
   return { buses, mode, error, ready };
 }

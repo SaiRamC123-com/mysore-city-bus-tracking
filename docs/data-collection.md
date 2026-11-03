@@ -1,12 +1,24 @@
-# Replacing the demo data with real Mysuru data
+# Route data and GTFS imports
 
-`server/data/*.seed.json` ships with **demo data**:
+`server/data/*.seed.json` ships with **Practice Mode demo data** only:
 
 - Stop coordinates are approximate placeholders (`"verified": false`). They are close to the real places but not surveyed.
 - Route numbers 201, 62, 44 and 33 and their timetables are invented for the demo. They are not official KSRTC numbers or timings.
 - Route lines are straight segments between stops, so distances are shorter than the real road.
 
-Everything the app says about arrival and departure times is only as good as this file. Do this before showing the app to real passengers.
+These seed files are not used by production route, stop, map, or trip-planning APIs. The application does not currently include an authenticated official Mysuru KSRTC route feed.
+
+## Import an authorized GTFS ZIP
+
+Use the import workflow documented in the root [README](../README.md). Provide an authorized ZIP with `routes.txt`, `stops.txt`, `trips.txt`, and `stop_times.txt`. `shapes.txt`, `calendar.txt`, `calendar_dates.txt`, and `agency.txt` are supported when present.
+
+The importer writes each feed as a versioned set of Firestore collections and switches the active-feed pointer only after all documents have been stored. It marks all imported routes and stops unverified. Verify the source and coordinates with KSRTC before treating this feed as authoritative. Static shapes are route geometry only; they do not represent live vehicle positions.
+
+If `calendar.txt`/`calendar_dates.txt` are absent, trip times can be shown as feed reference times, but the service day cannot be confirmed. Without `shapes.txt`, the map shows a stop-to-stop schematic, not a road-following path.
+
+## Practice seed data
+
+The following legacy JSON details are retained solely for local Practice Mode. Editing them does not publish or activate production routes.
 
 ## 1. Stops (`stops.seed.json`)
 
@@ -44,10 +56,10 @@ Stand at the exact place the bus stops (not the building it is named after) and 
 
 This generates a departure every `headwayMin` minutes in both directions, with scheduled stop times computed from distance, `avgSpeedKmh` and `dwellSec`. If you have the printed or board timetable for a route, add `"offsets": { "s_cbs": 0, "s_palace": 4, ... }` (minutes after departure, per stop id) and those exact times are used instead.
 
-## 4. Load it
+## 4. Load practice data
 
-- In-memory demo mode: restart the server.
-- Firebase: `cd server && npm run seed`, then restart the server (it caches static data for 5 minutes).
+- The Driver page loads bundled seed routes only when Practice Mode is selected.
+- Production route APIs never fall back to these seeds.
 
 Run `npm test` in `server/`. It checks that every stop comes after the previous one along each route and that scheduled times increase.
 

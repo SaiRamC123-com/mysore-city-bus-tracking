@@ -37,11 +37,15 @@ const q = (params) => {
 
 // Routes and stops almost never change, so cache them for the session.
 let routesCache;
+let practiceRoutesCache;
 let stopsCache;
 
 export const api = {
   health: () => request("/health"),
-  routes: () => (routesCache ??= request("/routes").catch((e) => ((routesCache = undefined), Promise.reject(e)))),
+  routes: (practice = false) => {
+    if (practice) return (practiceRoutesCache ??= request("/routes?practice=true").catch((e) => ((practiceRoutesCache = undefined), Promise.reject(e))));
+    return (routesCache ??= request("/routes").catch((e) => ((routesCache = undefined), Promise.reject(e))));
+  },
   stops: () => (stopsCache ??= request("/stops").catch((e) => ((stopsCache = undefined), Promise.reject(e)))),
   buses: (route) => request(`/buses${q({ route })}`),
   events: (busId, limit = 50) => request(`/events${q({ busId, limit })}`),
@@ -49,7 +53,7 @@ export const api = {
   forecast: (stopId) => request(`/stops/${encodeURIComponent(stopId)}/forecast`),
   today: (routeId) => request(`/routes/${encodeURIComponent(routeId)}/today`),
   trips: (routeId, direction) => request(`/routes/${encodeURIComponent(routeId)}/trips${q({ direction })}`),
-    routePlan: (routeId, direction) => request(`/routes/${encodeURIComponent(routeId)}/plan${q({ direction })}`),
+    routePlan: (routeId, direction, tripStartTs) => request(`/routes/${encodeURIComponent(routeId)}/plan${q({ direction, tripStartTs })}`),
   recommend: (from, to) => request(`/recommend${q({ from, to })}`),
   chat: (payload) => request("/chat", { method: "POST", body: payload }),
   ping: (secret, payload) =>

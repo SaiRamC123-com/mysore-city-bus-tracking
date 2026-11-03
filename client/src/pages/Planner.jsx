@@ -10,6 +10,7 @@ import { clock } from "../utils.js";
 export default function Planner() {
   const { t, lang } = useI18n();
   const [stops, setStops] = useState([]);
+  const [feedInfo, setFeedInfo] = useState({ sourceLabel: "", verified: false, serviceCalendarAvailable: false });
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [result, setResult] = useState(null);
@@ -20,7 +21,10 @@ export default function Planner() {
   useEffect(() => {
     api
       .stops()
-      .then((d) => setStops([...d.stops].sort((a, b) => a.name.localeCompare(b.name))))
+      .then((d) => {
+        setStops([...d.stops].sort((a, b) => a.name.localeCompare(b.name)));
+        setFeedInfo({ sourceLabel: d.sourceLabel, verified: d.verified, serviceCalendarAvailable: d.serviceCalendarAvailable });
+      })
       .catch((e) => setError(e.message));
   }, []);
 
@@ -50,6 +54,10 @@ export default function Planner() {
     <div className="mx-auto max-w-2xl space-y-4 p-4">
       <h1 className="font-display text-3xl font-extrabold">{t("plan.title")}</h1>
 
+      <p className="rounded-xl bg-lamp/25 p-3 text-sm ring-1 ring-lamp">
+        {feedInfo.sourceLabel === "No imported route feed" ? t("routes.unavailable") : t("routes.unverified")}
+      </p>
+
       <form onSubmit={submit} className="space-y-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-ink/10">
         <StopPicker label={t("plan.from")} stops={stops} value={from} onChange={setFrom} excludeId={to} lang={lang} placeholder={t("plan.type")} noMatch={t("plan.noMatch")} />
         <button type="button" onClick={swap} disabled={!from || !to} className="text-sm font-semibold text-maroon underline underline-offset-2 disabled:opacity-40">
@@ -71,6 +79,37 @@ export default function Planner() {
         <section className="space-y-3" aria-live="polite">
           <p className="rounded-xl bg-lamp/25 p-4 font-semibold ring-1 ring-lamp">{result.advice}</p>
           {result.lateNight && <p className="rounded-xl bg-ink p-3 text-sm text-white">{t("plan.late")}</p>}
+
+          {result.routeOptions?.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="font-display text-xl font-extrabold">{t("plan.gtfsRoutes")}</h2>
+              {result.routeOptions.map((route) => (
+                <article key={route.routeId} className="rounded-2xl bg-white p-3 shadow-sm ring-1 ring-ink/10">
+                  <div className="flex items-start gap-3">
+                    <span className="grid min-h-10 min-w-12 place-items-center rounded-lg bg-ink px-2 font-display text-lg font-extrabold text-white">
+                      {route.routeNumber}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-semibold">{route.routeName || t("towards", { place: route.destination })}</p>
+                      <p className="text-sm text-ink/70">{t("towards", { place: route.destination })}</p>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-sm">
+                    {[route.from, ...route.intermediateStops, route.to].join(" → ")}
+                  </p>
+                  {!route.serviceCalendarAvailable && <p className="mt-2 text-xs text-high">{t("plan.calendarMissing")}</p>}
+                  {route.serviceCalendarAvailable && !route.times.some((time) => time.scheduledForToday) && (
+                    <p className="mt-2 text-xs text-ink/70">{t("plan.notToday")}</p>
+                  )}
+                  {route.times.length > 0 && (
+                    <p className="mt-2 text-sm">
+                      {route.times.map((time) => `${time.departure} → ${time.arrival}`).join(", ")}
+                    </p>
+                  )}
+                </article>
+              ))}
+            </section>
+          )}
 
           {result.options?.map((o) => (
             <Link
